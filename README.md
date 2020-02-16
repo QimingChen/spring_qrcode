@@ -13,3 +13,11 @@
 * /login : phone login with credential, response has a token
 
 * /verify-qrcode?id={uuid2} : uuid2 is extracted by scanning qrcode, server updates the manipulation, so the next request from webpage request to /check-uuid={uuid1} will get a token, the webpage can save the token to upcoming requests
+
+
+
+# credit
+
+https://backendless.com/how-to-implement-mobile-to-web-cross-login-using-a-qr-code/
+
+https://aboullaite.me/generate-qrcode-with-logo-image-using-zxing/
