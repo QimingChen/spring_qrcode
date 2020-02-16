@@ -26,17 +26,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import javax.imageio.ImageIO;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
+@Component
 public class QRcodeUtils {
 
-  private final String DIR = "/directory/to/save/images";
-  private final String ext = ".png";
-  private final String LOGO = "logo_url";
-  private final String CONTENT = "some content here";
+//  private final String ext = ".png";
+//  private final String LOGO = "logo_url";
+  private final String logoFilename = "Twitter_Logo_Blue.png";
   private final int WIDTH = 300;
   private final int HEIGHT = 300;
 
-  public void generate() {
+  public byte[] generate(String content) throws WriterException, IOException {
     // Create new configuration that specifies the error correction
     Map<EncodeHintType, ErrorCorrectionLevel> hints = new HashMap<>();
     hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H); //set error correction high?
@@ -45,18 +48,15 @@ public class QRcodeUtils {
     BitMatrix bitMatrix = null;
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      // init directory
-      cleanDirectory(DIR);
-      initDirectory(DIR);
 
       // Create a qr code with the url as content and a size of WxH px
-      bitMatrix = writer.encode(CONTENT, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
+      bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
 
       // Load QR image
       BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, getMatrixConfig());
 
       // Load logo image
-      BufferedImage overly = getOverly(LOGO);
+      BufferedImage overly = getOverly(logoFilename);
 
       // Calculate the delta height and width between QR code and logo
       int deltaHeight = qrImage.getHeight() - overly.getHeight();
@@ -79,35 +79,34 @@ public class QRcodeUtils {
       // Write combined image as PNG to OutputStream
       ImageIO.write(combined, "png", os);
       // Store Image
-      Files.copy(new ByteArrayInputStream(os.toByteArray()),
-          Paths.get(DIR + generateRandoTitle(new Random(), 9) + ext),
-          StandardCopyOption.REPLACE_EXISTING);
     } catch (WriterException e) {
       e.printStackTrace();
-      //LOG.error("WriterException occured", e);
+      throw e;
     } catch (IOException e) {
       e.printStackTrace();
+      throw e;
       //LOG.error("IOException occured", e);
     }
+    return os.toByteArray();
   }
 
-  private BufferedImage getOverly(String LOGO) throws IOException {
-    URL url = new URL(LOGO);
-    return ImageIO.read(url);
+  private BufferedImage getOverly(String logoFilename) throws IOException {
+    Resource resource = new ClassPathResource(logoFilename);
+    return ImageIO.read(resource.getURL());
   }
 
-  private void initDirectory(String DIR) throws IOException {
-    Files.createDirectories(Paths.get(DIR));
-  }
-
-  private void cleanDirectory(String DIR) {
-    try {
-      Files.walk(Paths.get(DIR), FileVisitOption.FOLLOW_LINKS).sorted(Comparator.reverseOrder())
-          .map(Path::toFile).forEach(File::delete);
-    } catch (IOException e) {
-      // Directory does not exist, Do nothing
-    }
-  }
+//  private void initDirectory(String DIR) throws IOException {
+//    Files.createDirectories(Paths.get(DIR));
+//  }
+//
+//  private void cleanDirectory(String DIR) {
+//    try {
+//      Files.walk(Paths.get(DIR), FileVisitOption.FOLLOW_LINKS).sorted(Comparator.reverseOrder())
+//          .map(Path::toFile).forEach(File::delete);
+//    } catch (IOException e) {
+//      // Directory does not exist, Do nothing
+//    }
+//  }
 
   private MatrixToImageConfig getMatrixConfig() {
     int qrCodeBodyArgb = QRcodeUtils.Colors.WHITE.getArgb();

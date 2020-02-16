@@ -1,8 +1,12 @@
 package com.example.qrcode.controller;
 
+import com.example.qrcode.exception.FileStorageException;
 import com.example.qrcode.exception.MyFileNotFoundException;
 import com.example.qrcode.model.DBFile;
 import com.example.qrcode.service.DBFileStorageService;
+import com.example.qrcode.service.QrCodeService;
+import com.google.zxing.WriterException;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -21,9 +25,13 @@ public class QrCodeController {
   @Autowired
   private DBFileStorageService dBFileStorageService;
 
-  @PostMapping("/request-qrcode?id={uuid1}")
-  public String requestQrCode(@PathVariable String uuid1){
+  @Autowired
+  private QrCodeService qrCodeService;
 
+  @PostMapping("/request-qrcode?id={uuid1}")
+  public String requestQrCode(@PathVariable String uuid1)
+      throws FileStorageException, IOException, WriterException {
+    String qrCodeUri = qrCodeService.requestQrCodeUri(uuid1);
     return qrCodeUri;
   }
 
