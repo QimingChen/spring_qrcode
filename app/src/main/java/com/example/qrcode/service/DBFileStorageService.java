@@ -1,5 +1,6 @@
 package com.example.qrcode.service;
 
+import com.example.qrcode.exception.DatabaseException;
 import com.example.qrcode.exception.FileStorageException;
 import com.example.qrcode.exception.MyFileNotFoundException;
 import com.example.qrcode.model.DBFile;
@@ -39,5 +40,14 @@ public class DBFileStorageService {
   public DBFile getFile(String fileId) throws MyFileNotFoundException {
     return dBFileRepository.findById(fileId)
         .orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
+  }
+
+  public Boolean deleteFile(String fileId){
+    try {
+      dBFileRepository.deleteById(fileId);
+    }catch(Exception e){
+      throw new DatabaseException("fail to delete file");
+    }
+    return true;
   }
 }

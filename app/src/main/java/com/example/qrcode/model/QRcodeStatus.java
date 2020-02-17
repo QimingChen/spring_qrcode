@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,12 +17,20 @@ import lombok.Setter;
 public class QRcodeStatus {
 
   @Id
-  @Column
+  @Column(unique = true)
+  @NotNull
   private String uuid1;
 
-  @Column
+  @Column(unique = true)
+  @NotNull
   private String uuid2;
 
   @Column
-  private boolean status;
+  private String qrCodeId;
+
+  @Column
+  private Boolean status;
+
+  @Column
+  private String token;
 }
