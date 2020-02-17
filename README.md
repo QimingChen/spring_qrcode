@@ -16,7 +16,8 @@
 
 * /verify-qrcode/uuid={uuid2}&token={token}: uuid2 is extracted by scanning qrcode, server receives the uuid2 and the token, uuid2 is linked with uuid1, so it can get knowledge of which browser user it is handling. By updating the token field in database, so the next request from webpage request to /check-uuid={uuid1} will get a token, the webpage can save the token to upcoming requests
 
-[sample_qrcode]()
+![sample_qrcode](https://github.com/QimingChen/spring_qrcode/blob/master/readme_files/qrsample.png)
+(I used the twitter logo for test)
 
 
 # credit
